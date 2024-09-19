@@ -481,7 +481,7 @@ fun AssemblerScreen(p: PaddingValues) {
             ) {
                 Button(
                     onClick = {
-                        saveOpcodeToLocalStorage(context, srcCode.value)
+                        saveOpcodeToLocalStorage(context, optabContent.value)
                         Toast.makeText(
                             context,
                             "Saved the optab",
@@ -604,28 +604,27 @@ fun AssemblerScreen(p: PaddingValues) {
                             color = MaterialTheme.colorScheme.secondary
                         )
 
-                        val objectCodeLines = objectCode.value.split("\n")
-                        Column {
-                            objectCodeLines.forEach { line ->
-                                val lineParts = line.split("^")
-                                Row {
-                                    val prefix = lineParts[0]
-                                    Text(
-                                        text = line,
-                                        modifier = Modifier.padding(horizontal = 8.dp),
-                                        style = TextStyle(
-                                            fontSize = 14.sp,
-                                            fontFamily = FontFamily.Monospace,
-                                            fontWeight = FontWeight.Bold,
-                                            color = when (prefix) {
-                                                "E" -> MaterialTheme.colorScheme.error
-                                                else -> MaterialTheme.colorScheme.onBackground
-                                            }
-                                        )
-                                    )
-                                }
-                            }
-                        }
+                        TextField(
+                            value = objectCode.value,
+                            onValueChange = { objectCode.value = it },
+                            minLines = 5,
+                            maxLines = 10,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = TextFieldDefaults.colors(
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
+                            ),
+                            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                letterSpacing = 0.9.sp
+                            ),
+                            readOnly = true,
+                        )
+
                     } else if (passValue == 2 && objectCode.value.isEmpty()) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(

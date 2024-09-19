@@ -180,6 +180,7 @@ fun generateObjectCode(intermediateCode: String, symbolTable: String, operationT
     val header = "H^${lab[0]}^${lenify(start)}^${lenify(end - start)}"
 
     var length = 0
+    var prefix = "T^${lenify(start)}^"
     var currentRecord = StringBuilder("T^${lenify(start)}^")
     val textRecords = mutableListOf<String>()
     val maxBytes = 30
@@ -190,6 +191,8 @@ fun generateObjectCode(intermediateCode: String, symbolTable: String, operationT
         if (opc[i] in op) {
             length += 3
             if (sym.contains(opr[i])) {
+                val p = "^${op[opc[i]]}${sym[opr[i]]}"
+                println("WW: $p")
                 currentRecord.append(op[opc[i]]).append(sym[opr[i]])
             } else {
                 return Pair("", "Error! Undefined symbol: '${opr[i]}' found.")
@@ -197,17 +200,19 @@ fun generateObjectCode(intermediateCode: String, symbolTable: String, operationT
         } else {
             when (opc[i]) {
                 "BYTE" -> {
-                    val byteValue = opr[i].drop(2).dropLast(1) // Remove the quotes (X'...')
+                    val byteValue = opr[i].drop(2).dropLast(1)
                     val byteString = byteValue.map { it.code.toString(16).uppercase(Locale.ROOT).padStart(2, '0') }.joinToString("")
                     currentRecord.append(byteString)
                     length += byteValue.length
+
+                    println("BYTE: $byteString")
                 }
                 "WORD" -> {
                     currentRecord.append(lenify(opr[i].toInt()))
                     length += 3
+                    println("WORD: ${opr[i].toInt()}")
                 }
                 "RESB", "RESW" -> {
-                    continue
                 }
             }
         }
@@ -218,13 +223,14 @@ fun generateObjectCode(intermediateCode: String, symbolTable: String, operationT
             currentRecord = StringBuilder("T^${lenify(hexToInt(loc[i]))}^")
             length = 0
         } else {
+            if (currentRecord.last() != '^')
             currentRecord.append('^')
         }
     }
 
     if (currentRecord.isNotEmpty()) {
-        currentRecord.insert(9, length.toString(16).uppercase(Locale.ROOT).padStart(2, '0'))
-        textRecords.add(currentRecord.toString())
+        currentRecord.insert(9, length.toString(16).uppercase(Locale.ROOT).padStart(2, '0') + "^")
+        textRecords.add(currentRecord.toString().trimEnd('^'))
     }
 
     val endRecord = "E^${lenify(start)}"
@@ -233,9 +239,7 @@ fun generateObjectCode(intermediateCode: String, symbolTable: String, operationT
     textRecords.forEach { result.append("\n$it") }
     result.append("\n$endRecord")
 
-    val resultString = result.toString().replace(Regex("\\^+$"), "^")
-
-    return Pair(resultString, "")
+    return Pair(result.toString(), "")
 }
 
 
