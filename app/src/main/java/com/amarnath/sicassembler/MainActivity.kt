@@ -599,16 +599,16 @@ fun AssemblerScreen(p: PaddingValues) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             "Object Code",
-                            modifier = Modifier.padding(vertical = 8.dp),
+                            modifier = Modifier.padding(top = 8.dp),
+                            color = MaterialTheme.colorScheme.secondary,
                             style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.secondary
                         )
 
                         TextField(
                             value = objectCode.value,
                             onValueChange = { objectCode.value = it },
-                            minLines = 5,
-                            maxLines = 10,
+                            minLines = 1,
+                            maxLines = 4,
                             modifier = Modifier.fillMaxWidth(),
                             colors = TextFieldDefaults.colors(
                                 unfocusedContainerColor = Color.Transparent,
@@ -618,13 +618,12 @@ fun AssemblerScreen(p: PaddingValues) {
                             ),
                             textStyle = MaterialTheme.typography.bodyMedium.copy(
                                 fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                                letterSpacing = 0.9.sp
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 13.sp,
+                                letterSpacing = 0.8.sp
                             ),
                             readOnly = true,
                         )
-
                     } else if (passValue == 2 && objectCode.value.isEmpty()) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
@@ -672,7 +671,6 @@ fun AssemblerScreen(p: PaddingValues) {
                             style = TextStyle(
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                fontStyle = FontStyle.Italic
                             ),
                             color = MaterialTheme.colorScheme.secondary
                         )
@@ -741,7 +739,7 @@ fun AssemblerScreen(p: PaddingValues) {
                             "Intermediate File",
                             modifier = Modifier.padding(vertical = 8.dp),
                             style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.secondary
                         )
 
                         val intermediateFileLines = intermediateFile.split("\n")
