@@ -35,6 +35,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -61,6 +62,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.amarnath.sicassembler.ui.theme.SICAssemblerTheme
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import java.io.StringWriter
 
 val shouldBeInDarkMode = mutableStateOf(false)
@@ -98,7 +100,7 @@ fun AssemblerScreen(p: PaddingValues) {
 
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
-    val selectedText by remember { mutableStateOf("0") }
+    var selectedText by remember { mutableStateOf("0") }
 
     LaunchedEffect(Unit) {
         val (src, optab) = getFromLocalStorage(context)
@@ -205,7 +207,14 @@ fun AssemblerScreen(p: PaddingValues) {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Button(
-                        onClick = { passValue = 1 },
+                        onClick = {
+                            passValue = 1
+                            DynamicToast.makeSuccess(
+                                context,
+                                "Changed to Pass 1",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (passValue == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
@@ -220,7 +229,14 @@ fun AssemblerScreen(p: PaddingValues) {
                     }
 
                     Button(
-                        onClick = { passValue = 2 },
+                        onClick = {
+                            passValue = 2
+                            DynamicToast.makeSuccess(
+                                context,
+                                "Changed to Pass 2",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (passValue == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
@@ -297,7 +313,8 @@ fun AssemblerScreen(p: PaddingValues) {
                                 readOnly = true,
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                                 modifier = Modifier
-                                    .menuAnchor()
+                                    .menuAnchor(
+                                        MenuAnchorType.PrimaryEditable, true)
                                     .clip(RoundedCornerShape(12.dp))
                                     .padding(top = 2.dp),
                                 shape = RoundedCornerShape(12.dp),
@@ -321,11 +338,12 @@ fun AssemblerScreen(p: PaddingValues) {
                                             srcCode.value = item.srcCode
                                             optabContent.value = item.optabContent
                                             expanded = false
-                                            Toast.makeText(
+                                            DynamicToast.makeWarning(
                                                 context,
-                                                "Selected Preset S-$i",
+                                                "Preset S$i loaded",
                                                 Toast.LENGTH_SHORT
                                             ).show()
+                                            selectedText = "S$i"
                                         }
                                     )
                                 }
@@ -337,13 +355,11 @@ fun AssemblerScreen(p: PaddingValues) {
                         onClick = {
                             srcCode.value = ""
                             optabContent.value = ""
-                            Toast.makeText(
+                            DynamicToast.makeWarning(
                                 context,
                                 "Cleared the source code and optab",
                                 Toast.LENGTH_SHORT
                             ).show()
-
-
                         },
                         modifier = Modifier
                             .padding(8.dp)
@@ -409,8 +425,39 @@ fun AssemblerScreen(p: PaddingValues) {
             ) {
                 Button(
                     onClick = {
+                        if (srcCode.value.isEmpty()) {
+                            DynamicToast.makeWarning(
+                                context,
+                                "Source code is empty",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
+                        optabContent.value = generateOpCodeFromSourceCode(srcCode.value)
+                        DynamicToast.makeSuccess(
+                            context,
+                            "Generated the optab",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    contentPadding = PaddingValues(8.dp)
+                ) {
+                    Text(
+                        text = "Gen Op",
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+                Button(
+                    onClick = {
                         saveSourceCodeToLocalStorage(context, srcCode.value)
-                        Toast.makeText(
+                        DynamicToast.makeSuccess(
                             context,
                             "Saved the source code",
                             Toast.LENGTH_SHORT
@@ -421,7 +468,8 @@ fun AssemblerScreen(p: PaddingValues) {
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    contentPadding = PaddingValues(8.dp)
                 ) {
                     Text(
                         text = "Save",
@@ -431,7 +479,7 @@ fun AssemblerScreen(p: PaddingValues) {
                 }
                 ShowFileChooser(
                     photoPicker = {
-                        textPicker.launch("*/*||src")
+                        textPicker.launch("text/*||src")
                     },
                     text = "Source File",
                 )
@@ -482,7 +530,7 @@ fun AssemblerScreen(p: PaddingValues) {
                 Button(
                     onClick = {
                         saveOpcodeToLocalStorage(context, optabContent.value)
-                        Toast.makeText(
+                        DynamicToast.makeSuccess(
                             context,
                             "Saved the optab",
                             Toast.LENGTH_SHORT
@@ -503,7 +551,7 @@ fun AssemblerScreen(p: PaddingValues) {
                 }
                 ShowFileChooser(
                     photoPicker = {
-                        textPicker.launch("*/*||optab")
+                        textPicker.launch("text/*||optab")
                     },
                     text = " OpTab File",
                 )
@@ -526,8 +574,22 @@ fun AssemblerScreen(p: PaddingValues) {
                             symtab = result.first
                             intermediateFile = result.second
                             errString.value = result.third.ifEmpty { "Success!" }
+                            if (errString.value != "Success!") {
+                                DynamicToast.makeError(
+                                    context,
+                                    errString.value,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@Button
+                            }
                         } catch (e: Exception) {
+                            DynamicToast.makeError(
+                                context,
+                                "${e.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             errString.value = e.message ?: e.toString()
+                            return@Button
                         }
                         if (passValue == 2 && errString.value == "Success!") {
                             val passCode =
@@ -535,13 +597,18 @@ fun AssemblerScreen(p: PaddingValues) {
                             if (passCode.first.isNotEmpty()) {
                                 objectCode.value = passCode.first
                             } else {
+                                DynamicToast.makeError(
+                                    context,
+                                    passCode.second,
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 errString.value = passCode.second
                             }
                         }
 
-                        Toast.makeText(
+                        DynamicToast.makeSuccess(
                             context,
-                            "Assembling completed",
+                            "Processed the source code",
                             Toast.LENGTH_SHORT
                         ).show()
                     },
@@ -620,7 +687,7 @@ fun AssemblerScreen(p: PaddingValues) {
                                 fontFamily = FontFamily.Monospace,
                                 fontWeight = FontWeight.ExtraBold,
                                 fontSize = 13.sp,
-                                letterSpacing = 0.8.sp
+                                letterSpacing = 0.8.sp,
                             ),
                             readOnly = true,
                         )

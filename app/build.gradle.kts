@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    // maven(url = "https://jitpack.io")
     namespace = "com.amarnath.sicassembler"
     compileSdk = 34
 
@@ -66,4 +67,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(libs.dynamic.toasts)
 }

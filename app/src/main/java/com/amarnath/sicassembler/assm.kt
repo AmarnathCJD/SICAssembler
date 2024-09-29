@@ -29,9 +29,123 @@ STA	    23
 ADD	    01
 JNC	    08
     """.trimIndent()
+    ),
+    Preset(
+        srcCode = """
+SUM     START   2000
+-       LDA     NUM1
+-       ADD     NUM2
+-       STA     RESULT
+-       RSUB    -
+NUM1    WORD    5
+NUM2    WORD    10
+RESULT  RESW    1
+-       END     2000
+        """.trimIndent(),
+        optabContent = """
+LDA     00 
+STA     23
+ADD     01
+RSUB    4C
+WORD    24
+RESW    30
+        """.trimIndent()
+    ),
+    Preset(
+        srcCode = """
+CALC    START   3000
+-       LDA     VALUE
+-       MUL     FACTOR
+-       STA     PRODUCT
+-       COMP    LIMIT
+-       JLT     LESS
+-       J       DONE
+LESS    SUB     ONE
+-       STA     PRODUCT
+DONE    RSUB    -
+VALUE   WORD    6
+FACTOR  WORD    3
+PRODUCT RESW    1
+LIMIT   WORD    20
+ONE     WORD    1
+-       END     3000
+        """.trimIndent(),
+        optabContent = """
+MUL     20
+COMP    28
+JLT     38
+J       3C
+SUB     05
+RSUB    4C
+        """.trimIndent()
+    ),
+    Preset(
+        srcCode = """
+MULT    START   4000
+-       LDA     VAR1
+-       MUL     VAR2
+-       STA     RESULT
+-       RSUB    -
+VAR1    WORD    7
+VAR2    WORD    8
+RESULT  RESW    1
+-       END     4000
+        """.trimIndent(),
+        optabContent = """
+LDA     00
+STA     23
+MUL     20
+RSUB    4C
+WORD    24
+RESW    30
+        """.trimIndent()
     )
 )
 
+
+val optabPredefined = mapOf(
+    "ADD" to "18",
+    "AND" to "40",
+    "COMP" to "28",
+    "DIV" to "24",
+    "J" to "3C",
+    "JEQ" to "30",
+    "JGT" to "34",
+    "JLT" to "38",
+    "JSUB" to "48",
+    "LDA" to "00",
+    "LDCH" to "50",
+    "LDL" to "08",
+    "LDX" to "04",
+    "MUL" to "20",
+    "OR" to "44",
+    "RD" to "D8",
+    "RSUB" to "4C",
+    "STA" to "0C",
+    "STCH" to "54",
+    "STL" to "14",
+    "STSW" to "E8",
+    "STX" to "10",
+    "SUB" to "1C",
+    "TD" to "E0",
+    "TIX" to "2C",
+    "WD" to "DC"
+)
+
+fun generateOpCodeFromSourceCode(srcCode: String): String {
+    val lines = srcCode.lines()
+    val opCode = StringBuilder()
+    for (line in lines) {
+        if (line.isNotEmpty()) {
+            val words = line.split(Regex("\\s+"))
+            val opcode = words[1]
+            if (optabPredefined.containsKey(opcode)) {
+                opCode.append(opcode).append(" ").append(optabPredefined[opcode]).append("\n")
+            }
+        }
+    }
+    return opCode.toString()
+}
 
 fun decimalToHex(decimal: Int): String {
     return decimal.toString(16).uppercase()
@@ -200,6 +314,8 @@ fun generateObjectCode(
                 length += 3
                 if (sym.contains(opr[i])) {
                     currentRecord.append(op[opc[i]]).append(sym[opr[i]])
+                } else if (opr[i] == "-") {
+                    currentRecord.append(op[opc[i]]).append("0000")
                 } else {
                     return Pair("", "Error! Undefined symbol: '${opr[i]}' found.")
                 }
