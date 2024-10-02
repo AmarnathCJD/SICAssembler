@@ -6,7 +6,9 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -15,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import java.io.File
 
@@ -84,28 +88,18 @@ fun ShowFileChooser(
         onClick = { photoPicker() },
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            containerColor = MaterialTheme.colorScheme.tertiary,
         ),
         modifier = Modifier.padding(horizontal = 8.dp)
     ) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = MaterialTheme.colorScheme.onPrimary
+        Image(
+            painter = painterResource(id = R.drawable.file_present_24dp_e8eaed_fill0_wght400_grad0_opsz24),
+            contentDescription = "Dark Mode",
+            modifier = Modifier.size(24.dp),
+            colorFilter = ColorFilter.tint(
+                MaterialTheme.colorScheme.onTertiary
+            )
         )
-    }
-}
-
-fun saveToLocalStorage(context: Context, sourceCode: String, opCode: String) {
-    if (sourceCode.isEmpty() || opCode.isEmpty()) return
-    if (sourceCode.isNotEmpty()) {
-        val file = File(context.filesDir, "sourceCode.txt")
-        file.writeText(sourceCode)
-    }
-    if (opCode.isNotEmpty()) {
-        val file2 = File(context.filesDir, "opCode.txt")
-        file2.writeText(opCode)
     }
 }
 

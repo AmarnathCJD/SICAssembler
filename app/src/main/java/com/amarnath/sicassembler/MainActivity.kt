@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -33,7 +34,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Scaffold
@@ -52,16 +53,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.amarnath.sicassembler.ui.theme.SICAssemblerTheme
+import com.amarnath.sicassembler.ui.theme.fedFont
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import java.io.StringWriter
 
@@ -101,6 +103,7 @@ fun AssemblerScreen(p: PaddingValues) {
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf("0") }
+    val clipboardManager = LocalClipboardManager.current
 
     LaunchedEffect(Unit) {
         val (src, optab) = getFromLocalStorage(context)
@@ -167,24 +170,39 @@ fun AssemblerScreen(p: PaddingValues) {
                             .padding(top = 12.dp),
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary,
-                            letterSpacing = 1.2.sp
+                            color = MaterialTheme.colorScheme.tertiary,
+                            letterSpacing = 1.2.sp,
+                            fontFamily = fedFont,
+                            fontSize = 26.sp
                         )
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Text(
-                        "Developed by @Amarnath",
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .padding(bottom = 12.dp),
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            letterSpacing = 0.8.sp
+                    Column {
+                        Text(
+                            "Developed by @Amarnath",
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(bottom = 12.dp),
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                letterSpacing = 0.8.sp,
+                                fontFamily = fedFont
+                            )
                         )
-                    )
+                        Text(
+                            "The SIC assembler converts symbolic assembly code into machine code for the Simplified Instructional Computer (SIC) architecture, facilitating efficient instruction execution.",
+                            modifier = Modifier.padding(bottom = 8.dp),
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.inverseSurface,
+                                letterSpacing = 0.8.sp,
+                                fontFamily = fedFont
+                            )
+                        )
+                    }
                 }
             }
 
@@ -193,7 +211,7 @@ fun AssemblerScreen(p: PaddingValues) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(6.dp),
                 elevation = CardDefaults.elevatedCardElevation(
                     defaultElevation = 8.dp,
                     pressedElevation = 12.dp
@@ -209,50 +227,82 @@ fun AssemblerScreen(p: PaddingValues) {
                     Button(
                         onClick = {
                             passValue = 1
-                            DynamicToast.makeSuccess(
-                                context,
-                                "Changed to Pass 1",
-                                Toast.LENGTH_SHORT
-                            ).show()
                         },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(6.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (passValue == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                            containerColor = if (passValue == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                         ),
                         modifier = Modifier.padding(horizontal = 8.dp)
                     ) {
-                        Text(
-                            "Pass 1",
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                "Pass 2",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = fedFont
+                                )
+                            )
+                            if (passValue == 1) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Image(
+                                    painter = painterResource(id = R.drawable.check_circle_24dp_e8eaed_fill0_wght400_grad0_opsz24),
+                                    contentDescription = "Pass 1 Selected",
+                                    modifier = Modifier.size(24.dp),
+                                    colorFilter = ColorFilter.tint(
+                                        MaterialTheme.colorScheme.onPrimary
+                                    )
+                                )
+                            }
+                        }
                     }
 
                     Button(
                         onClick = {
                             passValue = 2
-                            DynamicToast.makeSuccess(
-                                context,
-                                "Changed to Pass 2",
-                                Toast.LENGTH_SHORT
-                            ).show()
                         },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(6.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (passValue == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                            containerColor = if (passValue == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                         ),
                         modifier = Modifier.padding(horizontal = 8.dp)
                     ) {
-                        Text(
-                            "Pass 2",
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                "Pass 2",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = fedFont
+                                )
+                            )
+                            if (passValue == 2) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Image(
+                                    painter = painterResource(id = R.drawable.check_circle_24dp_e8eaed_fill0_wght400_grad0_opsz24),
+                                    contentDescription = "Pass 2 Selected",
+                                    modifier = Modifier.size(24.dp),
+                                    colorFilter = ColorFilter.tint(
+                                        MaterialTheme.colorScheme.onPrimary
+                                    )
+                                )
+                            }
+                        }
                     }
 
                     Button(
                         onClick = { shouldBeInDarkMode.value = !shouldBeInDarkMode.value },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(6.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant
                         ),
@@ -285,7 +335,7 @@ fun AssemblerScreen(p: PaddingValues) {
             ElevatedCard(
                 modifier = Modifier
                     .padding(8.dp),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(6.dp),
                 elevation = CardDefaults.elevatedCardElevation(
                     defaultElevation = 8.dp,
                     pressedElevation = 12.dp
@@ -298,7 +348,7 @@ fun AssemblerScreen(p: PaddingValues) {
                     Box(
                         modifier = Modifier
                             .padding(horizontal = 8.dp, vertical = 2.dp)
-                            .clip(RoundedCornerShape(8.dp)),
+                            .clip(RoundedCornerShape(6.dp)),
                         contentAlignment = Alignment.TopCenter
                     ) {
                         ExposedDropdownMenuBox(
@@ -308,13 +358,14 @@ fun AssemblerScreen(p: PaddingValues) {
                             },
                         ) {
                             TextField(
-                                value = if (selectedText == "0") "Select Preset" else selectedText,
+                                value = if (selectedText == "0") "Select Preset" else "Selected > $selectedText",
                                 onValueChange = {},
                                 readOnly = true,
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                                 modifier = Modifier
                                     .menuAnchor(
-                                        MenuAnchorType.PrimaryEditable, true)
+                                        MenuAnchorType.PrimaryEditable, true
+                                    )
                                     .clip(RoundedCornerShape(12.dp))
                                     .padding(top = 2.dp),
                                 shape = RoundedCornerShape(12.dp),
@@ -324,7 +375,11 @@ fun AssemblerScreen(p: PaddingValues) {
                                     focusedIndicatorColor = Color.Transparent,
                                     unfocusedIndicatorColor = Color.Transparent
                                 ),
-                                textStyle = MaterialTheme.typography.bodyMedium,
+                                textStyle = MaterialTheme.typography.bodyMedium
+                                    .copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp
+                                    ),
                             )
 
                             ExposedDropdownMenu(
@@ -338,11 +393,6 @@ fun AssemblerScreen(p: PaddingValues) {
                                             srcCode.value = item.srcCode
                                             optabContent.value = item.optabContent
                                             expanded = false
-                                            DynamicToast.makeWarning(
-                                                context,
-                                                "Preset S$i loaded",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
                                             selectedText = "S$i"
                                         }
                                     )
@@ -360,12 +410,13 @@ fun AssemblerScreen(p: PaddingValues) {
                                 "Cleared the source code and optab",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            selectedText = "0"
                         },
                         modifier = Modifier
                             .padding(8.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(6.dp))
                             .padding(vertical = 0.dp),
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(6.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.errorContainer,
                         ),
@@ -385,7 +436,7 @@ fun AssemblerScreen(p: PaddingValues) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(6.dp),
                 elevation = CardDefaults.elevatedCardElevation(
                     defaultElevation = 8.dp,
                     pressedElevation = 12.dp
@@ -440,7 +491,7 @@ fun AssemblerScreen(p: PaddingValues) {
                             Toast.LENGTH_SHORT
                         ).show()
                     },
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -450,8 +501,12 @@ fun AssemblerScreen(p: PaddingValues) {
                 ) {
                     Text(
                         text = "Gen Op",
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        color = MaterialTheme.colorScheme.onPrimary
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = fedFont
+                        )
                     )
                 }
                 Button(
@@ -463,7 +518,7 @@ fun AssemblerScreen(p: PaddingValues) {
                             Toast.LENGTH_SHORT
                         ).show()
                     },
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -474,7 +529,11 @@ fun AssemblerScreen(p: PaddingValues) {
                     Text(
                         text = "Save",
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = fedFont
+                        )
                     )
                 }
                 ShowFileChooser(
@@ -489,7 +548,7 @@ fun AssemblerScreen(p: PaddingValues) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(6.dp),
                 elevation = CardDefaults.elevatedCardElevation(
                     defaultElevation = 8.dp,
                     pressedElevation = 12.dp
@@ -536,17 +595,22 @@ fun AssemblerScreen(p: PaddingValues) {
                             Toast.LENGTH_SHORT
                         ).show()
                     },
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    contentPadding = PaddingValues(8.dp)
                 ) {
                     Text(
                         text = "Save",
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = fedFont
+                        )
                     )
                 }
                 ShowFileChooser(
@@ -561,7 +625,7 @@ fun AssemblerScreen(p: PaddingValues) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(6.dp),
                 elevation = CardDefaults.elevatedCardElevation(
                     defaultElevation = 8.dp,
                     pressedElevation = 12.dp
@@ -605,25 +669,29 @@ fun AssemblerScreen(p: PaddingValues) {
                                 errString.value = passCode.second
                             }
                         }
-
-                        DynamicToast.makeSuccess(
-                            context,
-                            "Processed the source code",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = MaterialTheme.colorScheme.primary,
                     )
                 ) {
                     Text(
                         "Assemble",
                         style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = fedFont
                         ),
                         color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.code_24dp_e8eaed_fill0_wght400_grad0_opsz24),
+                        contentDescription = "Dark Mode",
+                        modifier = Modifier.size(24.dp),
+                        colorFilter = ColorFilter.tint(
+                            MaterialTheme.colorScheme.onPrimary
+                        )
                     )
                 }
             }
@@ -644,206 +712,281 @@ fun AssemblerScreen(p: PaddingValues) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
                 ) {
-                    BasicTextField(
-                        value = errString.value,
-                        onValueChange = {},
-                        textStyle = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = if (errString.value == "Success!") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                        ),
+                    ElevatedCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.onSecondary)
-                            .padding(8.dp)
-                            .align(Alignment.CenterHorizontally),
-                        readOnly = true
-                    )
-
-                    if (passValue == 2 && objectCode.value.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            "Object Code",
-                            modifier = Modifier.padding(top = 8.dp),
-                            color = MaterialTheme.colorScheme.secondary,
-                            style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
-                        )
-
-                        TextField(
-                            value = objectCode.value,
-                            onValueChange = { objectCode.value = it },
-                            minLines = 1,
-                            maxLines = 4,
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = TextFieldDefaults.colors(
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedContainerColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
-                            ),
+                            .padding(vertical = 8.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(8.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    ) {
+                        BasicTextField(
+                            value = errString.value,
+                            onValueChange = {},
                             textStyle = MaterialTheme.typography.bodyMedium.copy(
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 13.sp,
-                                letterSpacing = 0.8.sp,
-                            ),
-                            readOnly = true,
-                        )
-                    } else if (passValue == 2 && objectCode.value.isEmpty()) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            "Object Code",
-                            modifier = Modifier.padding(vertical = 8.dp),
-                            style = TextStyle(
-                                fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                fontStyle = FontStyle.Italic
-                            ),
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-
-                        BasicTextField(
-                            value = "Object code will be generated after Pass 2",
-                            onValueChange = {},
-                            textStyle = TextStyle(
-                                fontSize = 14.sp,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onBackground
+                                color = if (errString.value == "Success!") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
-                                .padding(8.dp),
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(MaterialTheme.colorScheme.onSecondary)
+                                .padding(8.dp)
+                                .align(Alignment.CenterHorizontally),
                             readOnly = true
                         )
                     }
-
-                    if (symtab.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        HorizontalDivider(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MaterialTheme.colorScheme.outline,
-                            thickness = 1.dp
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-
-                    if (symtab.isNotEmpty()) {
-                        Text(
-                            "Symbol Table (Symtab)",
-                            modifier = Modifier.padding(vertical = 8.dp),
-                            style = TextStyle(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                            ),
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-
-                        val symtabLines = symtab.split("\n")
-                        Column {
-                            symtabLines.forEach { line ->
-                                val lineParts = line.split("\t")
-                                Row {
-                                    lineParts.forEach { part ->
-                                        Text(
-                                            text = AnnotatedString(part),
-                                            modifier = Modifier.padding(horizontal = 8.dp),
-                                            style = TextStyle(
-                                                fontSize = 14.sp,
-                                                fontFamily = FontFamily.Monospace,
-                                                fontWeight = FontWeight.Bold
-                                            ),
-                                            color = MaterialTheme.colorScheme.onBackground
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    HorizontalDivider(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colorScheme.outline,
-                        thickness = 1.dp
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                    if (intermediateFile.isEmpty()) {
-                        Text(
-                            "Intermediate File",
-                            modifier = Modifier.padding(vertical = 8.dp),
-                            style = TextStyle(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontStyle = FontStyle.Italic
-                            ),
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-
-                        BasicTextField(
-                            value = "Intermediate file will be generated after Pass 1",
-                            onValueChange = {},
-                            textStyle = TextStyle(
-                                fontSize = 14.sp,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onBackground
-                            ),
+                    if (passValue == 2 && objectCode.value.isNotEmpty()) {
+                        ElevatedCard(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(52.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .padding(8.dp),
-                            readOnly = true
-                        )
-                    } else {
-                        Text(
-                            "Intermediate File",
-                            modifier = Modifier.padding(vertical = 8.dp),
-                            style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.secondary
-                        )
+                                .padding(vertical = 8.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            elevation = CardDefaults.cardElevation(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    "Object Code",
+                                    modifier = Modifier.padding(vertical = 8.dp),
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    style = TextStyle(
+                                        fontSize = 17.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        fontFamily = fedFont
+                                    ),
+                                )
 
-                        val intermediateFileLines = intermediateFile.split("\n")
-                        Column {
-                            intermediateFileLines.forEach { line ->
-                                val lineParts = line.split("\t")
-                                Row {
-                                    lineParts.forEach { part ->
-                                        Text(
-                                            text = AnnotatedString(part),
-                                            modifier = Modifier.padding(horizontal = 8.dp),
-                                            style = TextStyle(
-                                                fontSize = 14.sp,
-                                                fontFamily = FontFamily.Monospace,
-                                                fontWeight = FontWeight.Bold
-                                            ),
-                                            color = when (part) {
-                                                "START" -> MaterialTheme.colorScheme.primary
-                                                "END" -> MaterialTheme.colorScheme.error
-                                                else -> MaterialTheme.colorScheme.onBackground
+                                val objectCodeLines = objectCode.value.split("\n")
+                                Column {
+                                    objectCodeLines.forEach { line ->
+                                        val lineParts = line.split("\t")
+                                        Row {
+                                            lineParts.forEach { part ->
+                                                Text(
+                                                    text = part,
+                                                    modifier = Modifier.padding(
+                                                        horizontal = 8.dp,
+                                                        vertical = 2.dp
+                                                    ),
+                                                    style = TextStyle(
+                                                        fontSize = 14.sp,
+                                                        fontFamily = FontFamily.Monospace,
+                                                        fontWeight = FontWeight.Bold
+                                                    ),
+                                                    color = MaterialTheme.colorScheme.onBackground
+                                                )
                                             }
+                                        }
+                                    }
+                                }
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End
+                                ) {
+                                    Button(
+                                        onClick = {
+                                            clipboardManager.setText(AnnotatedString(objectCode.value))
+                                            DynamicToast.make(
+                                                context, "Copied!",
+                                            )
+                                        },
+                                        shape = RoundedCornerShape(6.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.primary,
+                                            contentColor = MaterialTheme.colorScheme.onPrimary
+                                        ),
+                                        modifier = Modifier.padding(horizontal = 8.dp),
+                                        contentPadding = PaddingValues(4.dp)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.content_copy_24dp_e8eaed_fill0_wght400_grad0_opsz24),
+                                            contentDescription = "Copy",
+                                            tint = MaterialTheme.colorScheme.onPrimary
                                         )
+                                    }
+                                }
+                            }
+                        }
+                    } else if (passValue == 2 && objectCode.value.isEmpty()) {
+                        ElevatedCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            elevation = CardDefaults.cardElevation(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        ) {
+                            Text(
+                                "Object Code",
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                style = TextStyle(
+                                    fontSize = 17.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = fedFont
+                                ),
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+
+                            BasicTextField(
+                                value = "Object code will be generated after Pass 2",
+                                onValueChange = {},
+                                textStyle = TextStyle(
+                                    fontSize = 14.sp,
+                                    fontFamily = fedFont,
+                                    fontWeight = FontWeight.Light,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .padding(8.dp),
+                                readOnly = true
+                            )
+                        }
+                    }
+
+                    if (symtab.isNotEmpty()) {
+                        ElevatedCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            elevation = CardDefaults.cardElevation(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    "SymTab",
+                                    modifier = Modifier.padding(vertical = 8.dp),
+                                    style = TextStyle(
+                                        fontSize = 17.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        fontFamily = fedFont
+                                    ),
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+
+                                val symtabLines = symtab.split("\n")
+                                Column {
+                                    symtabLines.forEach { line ->
+                                        val lineParts = line.split("\t")
+                                        Row {
+                                            lineParts.forEach { part ->
+                                                Text(
+                                                    text = part,
+                                                    modifier = Modifier.padding(horizontal = 8.dp),
+                                                    style = TextStyle(
+                                                        fontSize = 14.sp,
+                                                        fontFamily = FontFamily.Monospace,
+                                                        fontWeight = FontWeight.Bold
+                                                    ),
+                                                    color = MaterialTheme.colorScheme.onBackground
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    if (intermediateFile.isEmpty()) {
+                        ElevatedCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            elevation = CardDefaults.cardElevation(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        ) {
+                            Text(
+                                "Intermediate File",
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                style = TextStyle(
+                                    fontSize = 17.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = fedFont
+                                ),
+                                color = MaterialTheme.colorScheme.secondary
+                            )
 
-                    HorizontalDivider(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colorScheme.outline,
-                        thickness = 1.dp
-                    )
+                            BasicTextField(
+                                value = "Intermediate file will be generated after Pass 1",
+                                onValueChange = {},
+                                textStyle = TextStyle(
+                                    fontSize = 14.sp,
+                                    fontFamily = fedFont,
+                                    fontWeight = FontWeight.Light,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(52.dp)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .padding(8.dp),
+                                readOnly = true
+                            )
+                        }
+                    } else {
+                        ElevatedCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            elevation = CardDefaults.cardElevation(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    "Intermediate File",
+                                    modifier = Modifier.padding(vertical = 8.dp),
+                                    style = TextStyle(
+                                        fontSize = 17.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        fontFamily = fedFont
+                                    ),
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                                val intermediateLines = intermediateFile.split("\n")
+                                Column {
+                                    intermediateLines.forEach { line ->
+                                        val lineParts = line.split("\t")
+                                        Row {
+                                            lineParts.forEach { part ->
+                                                Text(
+                                                    text = part,
+                                                    modifier = Modifier.padding(horizontal = 8.dp),
+                                                    style = TextStyle(
+                                                        fontSize = 14.sp,
+                                                        fontFamily = FontFamily.Monospace,
+                                                        fontWeight = FontWeight.Bold
+                                                    ),
+                                                    color = MaterialTheme.colorScheme.onBackground
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

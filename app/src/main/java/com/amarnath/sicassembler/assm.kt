@@ -47,8 +47,6 @@ LDA     00
 STA     23
 ADD     01
 RSUB    4C
-WORD    24
-RESW    30
         """.trimIndent()
     ),
     Preset(
@@ -96,8 +94,6 @@ LDA     00
 STA     23
 MUL     20
 RSUB    4C
-WORD    24
-RESW    30
         """.trimIndent()
     )
 )
@@ -139,11 +135,25 @@ fun generateOpCodeFromSourceCode(srcCode: String): String {
         if (line.isNotEmpty()) {
             val words = line.split(Regex("\\s+"))
             val opcode = words[1]
+            var spaceToAdd = 5
+            if (opcode.length == 4) {
+                spaceToAdd = 4
+            } else if (opcode.length == 2) {
+                spaceToAdd = 6
+            } else if (opcode.length == 1) {
+                spaceToAdd = 7
+            }
+
+            val spaceToAddChar = StringBuilder()
+            for (i in 0 until spaceToAdd) {
+                spaceToAddChar.append(" ")
+            }
             if (optabPredefined.containsKey(opcode)) {
-                opCode.append(opcode).append(" ").append(optabPredefined[opcode]).append("\n")
+                opCode.append(opcode).append(spaceToAddChar).append(optabPredefined[opcode]).append("\n")
             }
         }
     }
+    opCode.deleteCharAt(opCode.length - 1)
     return opCode.toString()
 }
 
