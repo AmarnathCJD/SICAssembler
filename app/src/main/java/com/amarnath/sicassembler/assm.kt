@@ -354,7 +354,7 @@ fun generateObjectCode(
             }
 
             if (length >= maxBytes) {
-                currentRecord.insert(9, length.toString(16).uppercase(Locale.ROOT).padStart(2, '0'))
+                currentRecord.insert(9, length.toString(16).uppercase(Locale.ROOT).padStart(2, '0') + "^")
                 textRecords.add(currentRecord.toString())
                 currentRecord = StringBuilder("T^${lenify(hexToInt(loc[i]))}^")
                 length = 0

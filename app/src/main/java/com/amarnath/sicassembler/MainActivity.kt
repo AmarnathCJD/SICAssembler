@@ -405,7 +405,7 @@ fun AssemblerScreen(p: PaddingValues) {
                         onClick = {
                             srcCode.value = ""
                             optabContent.value = ""
-                            DynamicToast.makeWarning(
+                            DynamicToast.makeSuccess(
                                 context,
                                 "Cleared the source code and optab",
                                 Toast.LENGTH_SHORT
@@ -718,9 +718,9 @@ fun AssemblerScreen(p: PaddingValues) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(8.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        shape = RoundedCornerShape(4.dp),
+                        elevation = CardDefaults.cardElevation(6.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimary)
                     ) {
                         BasicTextField(
                             value = errString.value,
@@ -731,7 +731,7 @@ fun AssemblerScreen(p: PaddingValues) {
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(6.dp))
+                                .clip(RoundedCornerShape(0.dp))
                                 .background(MaterialTheme.colorScheme.onSecondary)
                                 .padding(8.dp)
                                 .align(Alignment.CenterHorizontally),
@@ -803,12 +803,13 @@ fun AssemblerScreen(p: PaddingValues) {
                                             containerColor = MaterialTheme.colorScheme.primary,
                                             contentColor = MaterialTheme.colorScheme.onPrimary
                                         ),
-                                        modifier = Modifier.padding(horizontal = 8.dp),
+                                        modifier = Modifier.padding(horizontal = 0.dp),
                                         contentPadding = PaddingValues(4.dp)
                                     ) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.content_copy_24dp_e8eaed_fill0_wght400_grad0_opsz24),
                                             contentDescription = "Copy",
+                                            modifier = Modifier.size(24.dp),
                                             tint = MaterialTheme.colorScheme.onPrimary
                                         )
                                     }
@@ -885,7 +886,7 @@ fun AssemblerScreen(p: PaddingValues) {
                                         Row {
                                             lineParts.forEach { part ->
                                                 Text(
-                                                    text = part,
+                                                    text = fillSpace(part, 6),
                                                     modifier = Modifier.padding(horizontal = 8.dp),
                                                     style = TextStyle(
                                                         fontSize = 14.sp,
@@ -971,7 +972,7 @@ fun AssemblerScreen(p: PaddingValues) {
                                         Row {
                                             lineParts.forEach { part ->
                                                 Text(
-                                                    text = part,
+                                                    text = fillSpace(part, 6),
                                                     modifier = Modifier.padding(horizontal = 8.dp),
                                                     style = TextStyle(
                                                         fontSize = 14.sp,
@@ -991,4 +992,9 @@ fun AssemblerScreen(p: PaddingValues) {
             }
         }
     }
+}
+
+fun fillSpace(s: String, n: Int): String {
+    if (s.length >= n) return s
+    return s + " ".repeat(n - s.length)
 }
