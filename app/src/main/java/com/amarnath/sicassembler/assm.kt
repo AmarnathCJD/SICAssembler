@@ -131,10 +131,16 @@ val optabPredefined = mapOf(
 fun generateOpCodeFromSourceCode(srcCode: String): String {
     val lines = srcCode.lines()
     val opCode = StringBuilder()
+    val already = mutableListOf<String>()
     for (line in lines) {
         if (line.isNotEmpty()) {
             val words = line.split(Regex("\\s+"))
             val opcode = words[1]
+            if (!already.contains(opcode)) {
+                already.add(opcode)
+            } else {
+                continue
+            }
             var spaceToAdd = 5
             if (opcode.length == 4) {
                 spaceToAdd = 4
