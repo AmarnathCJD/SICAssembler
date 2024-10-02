@@ -315,8 +315,11 @@ fun generateObjectCode(
 
         val start = if (loc[0] != "-") hexToInt(loc[0]) else hexToInt(loc[1])
         val end = if (loc.last() == "-") hexToInt(loc[loc.size - 2]) else hexToInt(loc.last())
+        fun fillLabel(label: String): String {
+            return label.padEnd(6, '_')
+        }
 
-        val header = "H^${lab[0]}^${lenify(start)}^${lenify(end - start)}"
+        val header = "H^${fillLabel(lab[0])}^${lenify(start)}^${lenify(end - start)}"
 
         var length = 0
         var currentRecord = StringBuilder("T^${lenify(start)}^")
