@@ -47,11 +47,11 @@ class GetCustomContents(
     override fun parseResult(resultCode: Int, intent: Intent?): List<Uri> {
         return intent.takeIf {
             resultCode == Activity.RESULT_OK
-        }?.getClipDataUris(intent) ?: emptyList()
+        }?.getClipDataUris() ?: emptyList()
     }
 
     internal companion object {
-        internal fun Intent.getClipDataUris(intent: Intent?): List<Uri> {
+        internal fun Intent.getClipDataUris(): List<Uri> {
             val resultSet = LinkedHashSet<Uri>()
             data?.let { data ->
                 resultSet.add(data)
