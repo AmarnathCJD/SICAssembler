@@ -27,6 +27,39 @@
     <li>Frontend: Jetpack Compose (Kotlin)</li>
 </ul>
 
+<h2>ScreenShots</h2>
+
+| ![Image 1](https://envs.sh/WGF.png) | ![Image 2](https://envs.sh/WGt.png) |
+|:-----------------------------------:|:----------------------------------:|
+
+
+
+<h2>How To Use</h2>
+
+<ol>
+  <li><strong>Input Source Code:</strong> 
+    <p>Start by entering the SIC assembly source code into the input field provided. Ensure that the code follows standard SIC syntax and structure, including labels, instructions, and operands.</p>
+  </li>
+  
+  <li><strong>Load OPTAB (Operation Table):</strong> 
+    <p>Load the OPTAB, which contains the mnemonic operations and their corresponding opcode values. The OPTAB is preloaded with the necessary data, but you can also edit or add new instructions if required.</p>
+  </li>
+  
+  <li><strong>Click "Assemble" Button:</strong> 
+    <p>After entering the source code and loading the OPTAB, click on the "Assemble" button to begin the Pass 2 assembly process. The assembler will:</p>
+    <ul>
+      <li>Convert mnemonics into object code using the OPTAB.</li>
+      <li>Resolve addresses using the symbol table generated in Pass 1.</li>
+      <li>Generate the final object code, ready for execution.</li>
+    </ul>
+  </li>
+  
+  <li><strong>View Output:</strong> 
+    <p>Once the assembly process is complete, the assembled object code will be displayed along with any relevant listings or error messages.</p>
+  </li>
+</ol>
+
+
 <h2>Project Structure</h2>
 <p>This project is designed with clean architecture principles, ensuring a clear separation of concerns. The frontend is
     built with Jetpack Compose for a modern, declarative UI, while the backend uses Kotlin to handle logic, making
