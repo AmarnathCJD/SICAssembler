@@ -27,11 +27,10 @@
     <li>Frontend: Jetpack Compose (Kotlin)</li>
 </ul>
 
-<h2>ScreenShots</h2>
+<h2>Screenshots</h2>
 
 | ![Image 1](https://envs.sh/WGF.png) | ![Image 2](https://envs.sh/WGt.png) |
 |:-----------------------------------:|:----------------------------------:|
-
 
 
 <h2>How To Use</h2>
