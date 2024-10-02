@@ -411,6 +411,7 @@ fun AssemblerScreen(p: PaddingValues) {
                                 Toast.LENGTH_SHORT
                             ).show()
                             selectedText = "0"
+                            removeLocalStorage(context)
                         },
                         modifier = Modifier
                             .padding(8.dp)
@@ -667,8 +668,14 @@ fun AssemblerScreen(p: PaddingValues) {
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 errString.value = passCode.second
+                                return@Button
                             }
                         }
+
+                        DynamicToast.make(
+                            context,
+                            "Assembling completed!!!",
+                        ).show()
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(6.dp),
@@ -732,7 +739,7 @@ fun AssemblerScreen(p: PaddingValues) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(0.dp))
-                                .background(MaterialTheme.colorScheme.onSecondary)
+                                .background(MaterialTheme.colorScheme.onPrimary)
                                 .padding(8.dp)
                                 .align(Alignment.CenterHorizontally),
                             readOnly = true

@@ -113,6 +113,13 @@ fun saveSourceCodeToLocalStorage(context: Context, sourceCode: String) {
     file.writeText(sourceCode)
 }
 
+fun removeLocalStorage(context: Context) {
+    val file = File(context.filesDir, "sourceCode.txt")
+    file.delete()
+    val file2 = File(context.filesDir, "opCode.txt")
+    file2.delete()
+}
+
 fun getFromLocalStorage(context: Context): Pair<String, String> {
     var sourceCode = ""
     var opCode = ""
