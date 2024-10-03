@@ -124,7 +124,10 @@ fun AssemblerScreen(p: PaddingValues) {
                 val inputStream = contentResolver.openInputStream(uriPathURI)
                 val writer = StringWriter()
                 inputStream?.bufferedReader()?.useLines { lines ->
-                    lines.forEach { writer.write(it) }
+                    lines.forEach {
+                        writer.write(it)
+                        writer.write("\n")
+                    }
                 }
 
                 when (fileDest) {
@@ -761,7 +764,7 @@ fun AssemblerScreen(p: PaddingValues) {
                             ) {
                                 Text(
                                     "Object Code",
-                                    modifier = Modifier.padding(vertical = 8.dp),
+                                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
                                     color = MaterialTheme.colorScheme.secondary,
                                     style = TextStyle(
                                         fontSize = 17.sp,
@@ -834,7 +837,7 @@ fun AssemblerScreen(p: PaddingValues) {
                         ) {
                             Text(
                                 "Object Code",
-                                modifier = Modifier.padding(vertical = 8.dp),
+                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
                                 style = TextStyle(
                                     fontSize = 17.sp,
                                     fontWeight = FontWeight.Bold,
@@ -877,7 +880,7 @@ fun AssemblerScreen(p: PaddingValues) {
                             ) {
                                 Text(
                                     "SymTab",
-                                    modifier = Modifier.padding(vertical = 8.dp),
+                                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
                                     style = TextStyle(
                                         fontSize = 17.sp,
                                         fontWeight = FontWeight.Bold,
@@ -921,7 +924,7 @@ fun AssemblerScreen(p: PaddingValues) {
                         ) {
                             Text(
                                 "Intermediate File",
-                                modifier = Modifier.padding(vertical = 8.dp),
+                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
                                 style = TextStyle(
                                     fontSize = 17.sp,
                                     fontWeight = FontWeight.Bold,
@@ -951,7 +954,7 @@ fun AssemblerScreen(p: PaddingValues) {
                         ElevatedCard(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 8.dp),
+                                .padding(vertical = 8.dp, horizontal = 4.dp),
                             shape = RoundedCornerShape(12.dp),
                             elevation = CardDefaults.cardElevation(8.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -963,7 +966,7 @@ fun AssemblerScreen(p: PaddingValues) {
                             ) {
                                 Text(
                                     "Intermediate File",
-                                    modifier = Modifier.padding(vertical = 8.dp),
+                                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp),
                                     style = TextStyle(
                                         fontSize = 17.sp,
                                         fontWeight = FontWeight.Bold,
